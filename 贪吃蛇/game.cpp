@@ -31,6 +31,7 @@ int myrand_num(int m)
 void mainloop()
 {
 	//音效
+	//读取音频文件
 	mciSendString(TEXT("open shengzhang.wav alias shengzhang"), NULL, 0, NULL);
 	mciSendString(TEXT("open zhishi.wav alias zhishi"), NULL, 0, NULL);
 	mciSendString(TEXT("open zhuangqiang.WAV alias zhuangqiang"), NULL, 0, NULL);
@@ -45,18 +46,11 @@ void mainloop()
 	str = NULL;
 	fp = fopen("length_max.txt", "r");
 	if (fp == NULL)
-		max = 3;
+		max = 3;//若打开失败则初始最高纪录为3
 	else
 	{
-		i = 0;
-		while (str != EOF)
-		{
-			str = fgetc(fp);
-			lmax[i] = str;
-			i++;
-		}
-		lmax[i] = '\0';
-		max = atoi(lmax);
+		fscanf(fp, "%d", &max);
+		fclose(fp);
 	}
 	length = 3;//蛇长
 
@@ -232,9 +226,9 @@ void mainloop()
 			tail = p;
 			food.z = 0;
 			length++;
-			mciSendString(TEXT("close shengzhang"), NULL, 0, NULL);
-			mciSendString(TEXT("open shengzhang.wav alias shengzhang"), NULL, 0, NULL);
-			mciSendString(TEXT("play shengzhang"), NULL, 0, NULL);
+			
+			mciSendString(TEXT("seek shengzhang to 0"), NULL, 0, NULL);//使音乐被播放时从头开始
+			mciSendString(TEXT("play shengzhang"), NULL, 0, NULL);//播放音乐
 		}
 
 		//自食死亡
@@ -253,23 +247,23 @@ void mainloop()
 		{
 			if (max < length)
 			{
-				mciSendString(TEXT("close shengli"), NULL, 0, NULL);
-				mciSendString(TEXT("open shengli.mp3 alias shengli"), NULL, 0, NULL);
+				
+				mciSendString(TEXT("seek shengli to 0"), NULL, 0, NULL);
 				mciSendString(TEXT("play shengli"), NULL, 0, NULL);
 				max = length;
 				death3(length, max);
 			}
 			else if (head->x == 999)
 			{
-				mciSendString(TEXT("close zhishi"), NULL, 0, NULL);
-				mciSendString(TEXT("open zhishi.wav alias zhishi"), NULL, 0, NULL);
+				
+				mciSendString(TEXT("seek zhishi to 0"), NULL, 0, NULL);
 				mciSendString(TEXT("play zhishi"), NULL, 0, NULL);
 				death2(length, max);
 			}
 			else
 			{
-				mciSendString(TEXT("close zhuangqiang"), NULL, 0, NULL);
-				mciSendString(TEXT("open zhuangqiang.WAV alias zhuangqiang"), NULL, 0, NULL);
+				
+				mciSendString(TEXT("seek zhuangqiang to 0"), NULL, 0, NULL);
 				mciSendString(TEXT("play zhuangqiang"), NULL, 0, NULL);
 				death1(length, max);
 			}
@@ -277,36 +271,12 @@ void mainloop()
 			getch();
 
 			//存档
-			i = 0;
-			if (max > 0 && max < 9)
-			{
-				i = 1;
-				book[1] = max;
-			}
-			else if (max >= 10 && max < 100)
-			{
-				i = 2;
-				book[1] = max / 10;
-				book[2] = max % 10;
-			}
-			else if (max >= 100 && max < 1000)
-			{
-				i = 3;
-				book[1] = max / 100;
-				book[2] = (max % 100) / 10;
-				book[3] = (max % 100) % 10;
-			}
 			fp = fopen("length_max.txt", "w");
-			fp = fopen("length_max.txt", "a+");
-			for (j = 1; j <= i; j++)
-			{
-				str = book[j] + 48;
-				fputc(str, fp);
-			}
+			fprintf(fp, "%d", max);
 			fclose(fp);
 
-			mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
-			mciSendString(TEXT("open \"E:\\资料\\编程\\C C++\\程序备份\\成品\\贪吃蛇\\Debug\\SWITCH.WAV\" alias SWITCH"), NULL, 0, NULL);
+			
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
 			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
 			break;
 		}
@@ -314,41 +284,8 @@ void mainloop()
 		//ESC强制退出
 		if (ch == 27)
 		{
-			//存档
-			i = 0;
-			if (max > 0 && max < 9)
-			{
-				i = 1;
-				book[1] = max;
-			}
-			else if (max >= 10 && max < 100)
-			{
-				i = 2;
-				book[1] = max / 10;
-				book[2] = max % 10;
-			}
-			else if (max >= 100 && max < 1000)
-			{
-				i = 3;
-				book[1] = max / 100;
-				book[2] = (max % 100) / 10;
-				book[3] = (max % 100) % 10;
-			}
-			else if (max >= 1000 && max < 10000)
-			{
-				i = 3;
-				book[1] = max / 1000;
-				book[2] = (max % 1000) / 100;
-				book[3] = ((max % 1000) % 100) / 10;
-				book[4] = ((max % 1000) % 100) % 10;
-			}
 			fp = fopen("length_max.txt", "w");
-			fp = fopen("length_max.txt", "a+");
-			for (j = 1; j <= i; j++)
-			{
-				str = book[j] + 48;
-				fputc(str, fp);
-			}
+			fprintf(fp, "%d", max);
 			fclose(fp);
 
 			break;
@@ -369,8 +306,14 @@ void mainloop()
 			bar(t->x, t->y, t->x + 11, t->y + 11);
 			t = t->next;
 		}
-
 	}
+
+	//关闭音频文件
+	mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
+	mciSendString(TEXT("close zhuangqiang"), NULL, 0, NULL);
+	mciSendString(TEXT("close zhishi"), NULL, 0, NULL);
+	mciSendString(TEXT("close shengli"), NULL, 0, NULL);
+	mciSendString(TEXT("close shengzhang"), NULL, 0, NULL);
 }
 
 void face(int length, int max)

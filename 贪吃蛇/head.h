@@ -24,6 +24,6 @@ typedef struct Food
 	int x, y,z;
 }food;
 
-
+//ÓÎÏ·Ö÷Ñ­»·
 void mainloop();
 int begin();

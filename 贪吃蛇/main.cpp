@@ -4,6 +4,14 @@
 //创建时间：2016.12.22
 //上次修改时间：2017.2.11 20:53
 //总制作天数：5
+//
+//更新日志：
+//1.1：
+//2017.5.18
+//	优化记录储存读取代码，使用fprint(),fscanf()来读取存储数据
+//	优化音乐播放代码,使用seek来初始化音频函数
+//	添加必要注释
+//
 //===============================
 #include"head.h"
 
@@ -69,16 +77,15 @@ int begin()
 		ch = getch();
 		if (ch == 27 || (x == 300 && (ch == 13 || ch == 32)))
 		{
-			mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
-			mciSendString(TEXT("open SWITCH.WAV alias SWITCH"), NULL, 0, NULL);
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
 			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
 			Sleep(200);
 			return 1;
 		}
 		else if (x == 200 && (ch == 13 || ch == 32))
 		{
-			mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
-			mciSendString(TEXT("open SWITCH.WAV alias SWITCH"), NULL, 0, NULL);
+			
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
 			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
 			return 0;
 		}
@@ -94,4 +101,6 @@ int begin()
 		}
 
 	}
+
+	mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
 }
