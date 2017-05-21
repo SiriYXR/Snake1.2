@@ -136,40 +136,25 @@ void mainloop()
 				if (head->direction == 4)
 					accelerate = 1;
 				if (head->direction != 2)
-				{
-					last_direction = head->direction;
 					head->direction = 4;
-				}
 				break;
 			case 's':
 				if (head->direction == 2)
 					accelerate = 1;
 				if (head->direction != 4)
-				{
-					last_direction = head->direction;
 					head->direction = 2;
-					
-				}
 				break;
 			case 'a':
 				if (head->direction == 1)
 					accelerate = 1;
 				if (head->direction != 3)
-				{
-					last_direction = head->direction;
 					head->direction = 1;
-					
-				}
 				break;
 			case 'd':
 				if (head->direction == 3)
 					accelerate = 1;
 				if (head->direction != 1)
-				{
-					last_direction = head->direction;
 					head->direction = 3;
-					
-				}
 				break;
 			case 32:
 				pause();
@@ -181,58 +166,18 @@ void mainloop()
 			}
 		}
 
-		/*int n = 0;
-		t = head;
+		
+		t = tail;
 		while (t != NULL)
 		{
 			t->x += direction[t->direction].x;
 			t->y += direction[t->direction].y;
 			if (t->prev != NULL)
 			{
-				if (t->prev->direction != t->direction&&n==0)
-				{
-					last_direction =t->direction;
-					t->direction = t->prev->direction;
-					n = 1;
-				}
-				else if(t->prev->direction == t->direction)
-					n = 0;
+				t->direction = t->prev->direction;
 			}
-			t = t->next;
-		}*/
-	
-		t = head;
-		t->x += direction[t->direction].x;
-		t->y += direction[t->direction].y;
-		mid_direction[num1] = t->direction;
-		t = t->next;
-		while (t != NULL)
-		{
-			num2 *= -1;
-			num1 += num2;
-			if (t->next != NULL)
-			{
-				t->x += direction[t->direction].x;
-				t->y += direction[t->direction].y;
-				mid_direction[num1] = t->direction;
-				num2 *= -1;
-				num1 += num2;
-				t->direction = mid_direction[num1];
-				num2 *= -1;
-				num1 += num2;
-				t = t->next;
-			}
-			else
-			{
-				num2 *= -1;
-				num1 += num2;
-				t->x += direction[t->direction].x;
-				t->y += direction[t->direction].y;
-				t->direction = mid_direction[num1];
-				t = t->next;
-			}
+			t = t->prev;
 		}
-
 
 		//ÉßÎ²Éú³¤
 		if (head->x == food.x&&head->y == food.y)
