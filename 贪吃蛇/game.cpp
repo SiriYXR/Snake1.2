@@ -38,13 +38,13 @@ void mainloop()
 	mciSendString(TEXT("open shengli.mp3 alias shengli"), NULL, 0, NULL);
 
 	FILE *fp;
-	char ch = 0, lmax[5], str;
+	char key = 0, lmax[5];
 	int  length, mid_direction[2], num1, num2, accelerate, max, speed, speed_max, *pt;
+	int last_direction;
 	int i, n, j, book[5], s_x[7] = { 260,250,240,230,220,210,200 };
 
 	//读取最高记录
-	str = NULL;
-	fp = fopen("length_max.txt", "r");
+	fp = fopen("data\\Save\\length_max.txt", "r");
 	if (fp == NULL)
 		max = 3;//若打开失败则初始最高纪录为3
 	else
@@ -52,6 +52,8 @@ void mainloop()
 		fscanf(fp, "%d", &max);
 		fclose(fp);
 	}
+
+
 	length = 3;//蛇长
 
 	//使num1在0，1来回跳跃
@@ -78,38 +80,33 @@ void mainloop()
 		p->x = s_x[i] + 4;
 		p->y = 254;
 		p->next = NULL;
+		p->prev = NULL;
 		if (head == NULL)
 			head = p;
 		else
+		{
 			tail->next = p;
+			p->prev = tail;
+		}
 		tail = p;
 	}
-
-	//清屏，重新在新的位置绘图图像
-	cleardevice();
-	face(length, max);
-	t = head;
-	while (t != NULL)
-	{
-		setfillcolor(EGERGB(0x00, 0xBF, 0xFF));
-		bar(t->x, t->y, t->x + 11, t->y + 11);
-		t = t->next;
-	}
-
+	
 	for (; is_run(); delay_fps(60))
 	{
 		if (accelerate != 0)
-			Sleep(300 - speed_max);
+			delay_ms(300 - speed_max);
 		else
-			Sleep(300 - length);
+			delay_ms(300 - length);
+
 		accelerate = 0;
-		ch = NULL;
+		key = NULL;
+
 		// todo: 逻辑更新
 
 		//随机生成食物
 		if (food.z == 0)
 		{
-			while (1)
+			while (true)
 			{
 				i = 0;
 				food.x = myrand(50);
@@ -126,43 +123,84 @@ void mainloop()
 			}
 			food.z = 1;
 		}
+		
+		
+
+		//人机交互
 		if (kbhit())
-			ch = getch();
-		switch (ch)
 		{
-		case 'w':
-			if (head->direction == 4)
-				accelerate = 1;
-			if (head->direction != 2)
-				head->direction = 4;
-			break;
-		case 's':
-			if (head->direction == 2)
-				accelerate = 1;
-			if (head->direction != 4)
-				head->direction = 2;
-			break;
-		case 'a':
-			if (head->direction == 1)
-				accelerate = 1;
-			if (head->direction != 3)
-				head->direction = 1;
-			break;
-		case 'd':
-			if (head->direction == 3)
-				accelerate = 1;
-			if (head->direction != 1)
-				head->direction = 3;
-			break;
-		case 32:
-			pause();
-			getch();
-			ch = NULL;
-			break;
-		default:
-			break;
+			key = getch();
+			switch (key)
+			{
+			case 'w':
+				if (head->direction == 4)
+					accelerate = 1;
+				if (head->direction != 2)
+				{
+					last_direction = head->direction;
+					head->direction = 4;
+				}
+				break;
+			case 's':
+				if (head->direction == 2)
+					accelerate = 1;
+				if (head->direction != 4)
+				{
+					last_direction = head->direction;
+					head->direction = 2;
+					
+				}
+				break;
+			case 'a':
+				if (head->direction == 1)
+					accelerate = 1;
+				if (head->direction != 3)
+				{
+					last_direction = head->direction;
+					head->direction = 1;
+					
+				}
+				break;
+			case 'd':
+				if (head->direction == 3)
+					accelerate = 1;
+				if (head->direction != 1)
+				{
+					last_direction = head->direction;
+					head->direction = 3;
+					
+				}
+				break;
+			case 32:
+				pause();
+				getch();
+				key = NULL;
+				break;
+			default:
+				break;
+			}
 		}
 
+		/*int n = 0;
+		t = head;
+		while (t != NULL)
+		{
+			t->x += direction[t->direction].x;
+			t->y += direction[t->direction].y;
+			if (t->prev != NULL)
+			{
+				if (t->prev->direction != t->direction&&n==0)
+				{
+					last_direction =t->direction;
+					t->direction = t->prev->direction;
+					n = 1;
+				}
+				else if(t->prev->direction == t->direction)
+					n = 0;
+			}
+			t = t->next;
+		}*/
+	
 		t = head;
 		t->x += direction[t->direction].x;
 		t->y += direction[t->direction].y;
@@ -222,7 +260,9 @@ void mainloop()
 				p->y = tail->y + 10;
 			}
 			p->next = NULL;
+			p->prev = NULL;
 			tail->next = p;
+			p->prev = tail;
 			tail = p;
 			food.z = 0;
 			length++;
@@ -262,27 +302,26 @@ void mainloop()
 			}
 			else
 			{
-				
 				mciSendString(TEXT("seek zhuangqiang to 0"), NULL, 0, NULL);
 				mciSendString(TEXT("play zhuangqiang"), NULL, 0, NULL);
 				death1(length, max);
 			}
-			Sleep(2000);
-			getch();
+			delay_ms(2000);
+			getkey();
 
 			//存档
-			fp = fopen("length_max.txt", "w");
+			fp = fopen("data\\Save\\length_max.txt", "w");
 			fprintf(fp, "%d", max);
 			fclose(fp);
 
 			
-			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
-			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
+			mciSendString(TEXT("seek SWITkey to 0"), NULL, 0, NULL);
+			mciSendString(TEXT("play SWITkey"), NULL, 0, NULL);
 			break;
 		}
 
 		//ESC强制退出
-		if (ch == 27)
+		if (key == 27)
 		{
 			fp = fopen("length_max.txt", "w");
 			fprintf(fp, "%d", max);
@@ -290,6 +329,8 @@ void mainloop()
 
 			break;
 		}
+
+
 		// todo: 图形更新
 		//清屏，重新在新的位置绘图图像
 		cleardevice();
@@ -309,7 +350,7 @@ void mainloop()
 	}
 
 	//关闭音频文件
-	mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
+	mciSendString(TEXT("close SWITkey"), NULL, 0, NULL);
 	mciSendString(TEXT("close zhuangqiang"), NULL, 0, NULL);
 	mciSendString(TEXT("close zhishi"), NULL, 0, NULL);
 	mciSendString(TEXT("close shengli"), NULL, 0, NULL);
@@ -345,11 +386,11 @@ void face(int length, int max)
 	setbkmode(TRANSPARENT);
 	outtextxy(545, 20, "贪吃蛇");
 	setfont(22, 0, "宋体");
-	char str1[20], str2[20];
-	sprintf(str1, "长度:%d", length);
-	outtextxy(550, 60, str1);
-	sprintf(str2, "历史记录:%d", max);
-	outtextxy(515, 100, str2);
+	char str[20];
+	sprintf(str, "长度:%d", length);//将引号中的内容写入str字符串
+	outtextxy(550, 60, str);
+	sprintf(str, "历史记录:%d", max);
+	outtextxy(515, 100, str);
 
 }
 void death1(int length, int max)
@@ -410,11 +451,11 @@ void death2(int length, int max)
 
 
 	setfont(32, 0, "宋体");
-	char str1[20], str2[20];
-	sprintf(str1, "最终长度:%d", length);
-	outtextxy(220, 170, str1);
-	sprintf(str2, "历史记录:%d", max);
-	outtextxy(220, 220, str2);
+	char str[20];
+	sprintf(str, "最终长度:%d", length);
+	outtextxy(220, 170, str);
+	sprintf(str, "历史记录:%d", max);
+	outtextxy(220, 220, str);
 }
 void death3(int length, int max)
 {

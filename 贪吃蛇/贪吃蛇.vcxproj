@@ -145,6 +145,7 @@
     <ClInclude Include="head.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="begin.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
