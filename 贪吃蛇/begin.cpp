@@ -4,7 +4,7 @@
 int begin()
 {
 	//音效
-	mciSendString(TEXT("open data\\Music\\SWITkey.WAV alias SWITkey"), NULL, 0, NULL);//打开本地音频文件
+	mciSendString(TEXT("open data\\Music\\SWITCH.WAV alias SWITCH"), NULL, 0, NULL);//打开本地音频文件
 	char key;
 	int y, mark;
 	y = 200;
@@ -39,16 +39,16 @@ int begin()
 		key = getch();
 		if (key == 27 || (y == 300 && (key == 13 || key == 32)))
 		{
-			mciSendString(TEXT("seek SWITkey to 0"), NULL, 0, NULL);//调整播放进度
-			mciSendString(TEXT("play SWITkey"), NULL, 0, NULL);//播放音频
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);//调整播放进度
+			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);//播放音频
 			delay_ms(200);//延迟200毫秒
 			return 1;
 		}
 		else if (y == 200 && (key == 13 || key == 32))
 		{
 			
-			mciSendString(TEXT("seek SWITkey to 0"), NULL, 0, NULL);
-			mciSendString(TEXT("play SWITkey"), NULL, 0, NULL);
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
+			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
 			return 0;
 		}
 		else if (key == 's'&&mark == 1)
@@ -63,5 +63,5 @@ int begin()
 		}
 	}
 
-	mciSendString(TEXT("close SWITkey"), NULL, 0, NULL);
+	mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
 }

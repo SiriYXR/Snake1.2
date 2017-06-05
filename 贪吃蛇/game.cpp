@@ -32,10 +32,12 @@ void mainloop()
 {
 	//音效
 	//读取音频文件
-	mciSendString(TEXT("open shengzhang.wav alias shengzhang"), NULL, 0, NULL);
-	mciSendString(TEXT("open zhishi.wav alias zhishi"), NULL, 0, NULL);
-	mciSendString(TEXT("open zhuangqiang.WAV alias zhuangqiang"), NULL, 0, NULL);
-	mciSendString(TEXT("open shengli.mp3 alias shengli"), NULL, 0, NULL);
+	mciSendString(TEXT("open data\\Music\\SWITCH.wav alias SWITCH"), NULL, 0, NULL);
+	mciSendString(TEXT("open data\\Music\\shengzhang.wav alias shengzhang"), NULL, 0, NULL);
+	mciSendString(TEXT("open data\\Music\\zhishi.wav alias zhishi"), NULL, 0, NULL);
+	mciSendString(TEXT("open data\\Music\\zhuangqiang.wav alias zhuangqiang"), NULL, 0, NULL);
+	mciSendString(TEXT("open data\\Music\\shengli.mp3 alias shengli"), NULL, 0, NULL);
+	
 
 	FILE *fp;
 	char key = 0, lmax[5];
@@ -260,8 +262,8 @@ void mainloop()
 			fclose(fp);
 
 			
-			mciSendString(TEXT("seek SWITkey to 0"), NULL, 0, NULL);
-			mciSendString(TEXT("play SWITkey"), NULL, 0, NULL);
+			mciSendString(TEXT("seek SWITCH to 0"), NULL, 0, NULL);
+			mciSendString(TEXT("play SWITCH"), NULL, 0, NULL);
 			break;
 		}
 
@@ -295,7 +297,7 @@ void mainloop()
 	}
 
 	//关闭音频文件
-	mciSendString(TEXT("close SWITkey"), NULL, 0, NULL);
+	mciSendString(TEXT("close SWITCH"), NULL, 0, NULL);
 	mciSendString(TEXT("close zhuangqiang"), NULL, 0, NULL);
 	mciSendString(TEXT("close zhishi"), NULL, 0, NULL);
 	mciSendString(TEXT("close shengli"), NULL, 0, NULL);
